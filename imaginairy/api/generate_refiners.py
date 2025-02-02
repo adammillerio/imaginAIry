@@ -5,7 +5,7 @@ from contextlib import nullcontext
 from typing import Any
 
 from imaginairy.config import CONTROL_CONFIG_SHORTCUTS
-from imaginairy.schema import ControlInput, ImaginePrompt, MaskMode
+from imaginairy.schema import ControlInput, ImaginePrompt, LazyLoadingImage, MaskMode
 from imaginairy.utils import clear_gpu_cache, seed_everything
 from imaginairy.utils.log_utils import ImageLoggingContext
 
@@ -134,6 +134,8 @@ def generate_single_image(
 
         if prompt.init_image:
             starting_image = prompt.init_image
+            if isinstance(starting_image, LazyLoadingImage):
+                starting_image = starting_image.as_pillow()
             assert prompt.init_image_strength is not None
             first_step = int(prompt.steps * prompt.init_image_strength)
             # noise_step = int((prompt.steps - 1) * prompt.init_image_strength)
